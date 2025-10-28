@@ -1,8 +1,15 @@
-# <img width="128" height="128" alt="Image" src="https://github.com/user-attachments/assets/6621b57d-10b2-4e87-9d67-03a1012e7654" /><img width="122" height="122" alt="Image" src="https://github.com/user-attachments/assets/feec9c48-dda2-4707-b7c8-c13b77ad2329" /> PokéDex - Flutter App
+#  <p align="center"> PokéDex - Flutter App
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/7459cda4-7d2f-491c-8e85-c31b6ab0a5ee" alt="Logo" width="128" height="128" />
+  <img src="https://github.com/user-attachments/assets/0180f628-a648-4ac7-8550-4a0cf412aba0" alt="Screenshot 1" width="128" height="128" />
+  <img src="https://github.com/user-attachments/assets/6621b57d-10b2-4e87-9d67-03a1012e7654" alt="Screenshot 2" width="128" height="128" />
+  <img src="https://github.com/user-attachments/assets/feec9c48-dda2-4707-b7c8-c13b77ad2329" alt="Screenshot 3" width="122" height="122" />
+</p>
 
 Aplicativo móvel desenvolvido em Flutter que consome a [PokéAPI](https://pokeapi.co/) para exibir informações completas sobre Pokémon.
 
-##  Funcionalidades
+## Funcionalidades
 
 - **Splash Screen**: Tela de abertura animada com logo
 - **Lista Paginada**: Carrega 20 Pokémon por vez com infinite scroll
@@ -12,7 +19,7 @@ Aplicativo móvel desenvolvido em Flutter que consome a [PokéAPI](https://pokea
 - **Tema Claro/Escuro**: Alternância de tema com persistência
 - **Animações**: Hero animations e transições suaves
 
-##  Tecnologias
+## Tecnologias
 
 - Flutter SDK
 - Provider - Gerenciamento de estado
@@ -20,16 +27,18 @@ Aplicativo móvel desenvolvido em Flutter que consome a [PokéAPI](https://pokea
 - Cached Network Image - Cache de imagens
 - Shared Preferences - Persistência de dados
 
-##  Como Executar
+## Como Executar
 
 Clone o repositório, instale as dependências e execute:
 
+```bash
 git clone https://github.com/jonielmendes/flutter-pokemon-api.git
 cd flutter-pokemon-api
 flutter pub get
 flutter run
+```
 
-##  Arquitetura
+## Arquitetura
 
 O projeto segue o padrão Provider para gerenciamento de estado. A estrutura é organizada em camadas: UI Layer (telas e widgets), Providers (gerenciamento de estado), Services (comunicação HTTP) e PokéAPI.
 
@@ -37,17 +46,12 @@ O fluxo de dados funciona assim: a UI solicita dados via Provider, o Provider ch
 
 ## 🔧 Funcionalidades Técnicas
 
-**Infinite Scroll**: Detecta quando usuário está próximo do fim e carrega mais automaticamente
-
-**Pull-to-Refresh**: Arraste para baixo recarrega a lista
-
-**Busca em Tempo Real**: Filtra localmente 1000+ Pokémon instantaneamente
-
-**Cache de Imagens**: Armazena imagens localmente para melhor performance
-
-**Tratamento de Erros**: Captura erros de conexão e timeout com opção de retry
-
-**Persistência de Tema**: Salva preferência em SharedPreferences
+- **Infinite Scroll**: Detecta quando usuário está próximo do fim e carrega mais automaticamente
+- **Pull-to-Refresh**: Arraste para baixo recarrega a lista
+- **Busca em Tempo Real**: Filtra localmente 1000+ Pokémon instantaneamente
+- **Cache de Imagens**: Armazena imagens localmente para melhor performance
+- **Tratamento de Erros**: Captura erros de conexão e timeout com opção de retry
+- **Persistência de Tema**: Salva preferência em SharedPreferences
 
 ## 🌐 API Utilizada
 
@@ -62,4 +66,3 @@ Endpoints consumidos:
 ## 📄 Licença
 
 Projeto desenvolvido para fins acadêmicos (Programação para Dispositivos Móveis).
-
