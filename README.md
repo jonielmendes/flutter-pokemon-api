@@ -1,4 +1,4 @@
-# <img width="122" height="122" alt="Image" src="https://github.com/user-attachments/assets/feec9c48-dda2-4707-b7c8-c13b77ad2329" /> PokéDex - Flutter App
+# <img width="128" height="128" alt="Image" src="https://github.com/user-attachments/assets/6621b57d-10b2-4e87-9d67-03a1012e7654" /><img width="122" height="122" alt="Image" src="https://github.com/user-attachments/assets/feec9c48-dda2-4707-b7c8-c13b77ad2329" /> PokéDex - Flutter App
 
 Aplicativo móvel desenvolvido em Flutter que consome a [PokéAPI](https://pokeapi.co/) para exibir informações completas sobre Pokémon.
 
