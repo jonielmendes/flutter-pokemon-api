@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Widget customizado para exibir erros com botão de retry
 class ErrorWidgetCustom extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/pokemon.dart';
 import '../services/pokemon_service.dart';
 
+/// Provider responsável pelo gerenciamento de estado da lista de Pokémon
 class PokemonProvider with ChangeNotifier {
   final PokemonService _service = PokemonService();
   
@@ -17,6 +18,8 @@ class PokemonProvider with ChangeNotifier {
   bool get hasMore => _hasMore;
   String? get error => _error;
   
+  /// Carrega pokémon com paginação (infinite scroll)
+  /// [refresh] = true reseta a lista (pull-to-refresh)
   Future<void> loadPokemons({bool refresh = false}) async {
     if (_isLoading) return;
     
@@ -34,9 +37,9 @@ class PokemonProvider with ChangeNotifier {
     notifyListeners();
     
     try {
-      final result = await _service.getPokemonList(
-        offset: _offset,
-        limit: _limit,
+      final result = await _service.obterListaPokemon(
+        deslocamento: _offset,
+        limite: _limit,
       );
       
       final newPokemons = result['results'] as List<PokemonListItem>;
@@ -60,7 +63,7 @@ class PokemonProvider with ChangeNotifier {
   
   Future<Pokemon> getPokemon(int id) async {
     try {
-      return await _service.getPokemon(id);
+      return await _service.obterPokemon(id);
     } catch (e) {
       rethrow;
     }
@@ -68,7 +71,7 @@ class PokemonProvider with ChangeNotifier {
   
   Future<PokemonDetails> getPokemonDetails(int id) async {
     try {
-      return await _service.getPokemonDetails(id);
+      return await _service.obterDetalhesPokemon(id);
     } catch (e) {
       rethrow;
     }
@@ -103,7 +106,7 @@ class SearchProvider with ChangeNotifier {
     notifyListeners();
     
     try {
-      _searchResults = await _service.searchPokemon(query);
+      _searchResults = await _service.pesquisarPokemon(query);
     } catch (e) {
       _searchError = e.toString();
       _searchResults = [];

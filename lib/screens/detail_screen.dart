@@ -9,6 +9,7 @@ import '../widgets/error_widget.dart';
 import '../widgets/stat_bar.dart';
 import '../widgets/type_badge.dart';
 
+/// Tela de detalhes do pokémon com informações completas
 class DetailScreen extends StatelessWidget {
   final int pokemonId;
 
@@ -33,7 +34,6 @@ class DetailScreen extends StatelessWidget {
             return ErrorWidgetCustom(
               message: snapshot.error.toString(),
               onRetry: () {
-                // Trigger rebuild
                 (context as Element).markNeedsBuild();
               },
             );

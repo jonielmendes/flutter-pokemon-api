@@ -4,204 +4,238 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../models/pokemon.dart';
 
+/// Serviço responsável pela comunicação com a PokéAPI
 class PokemonService {
   static const String baseUrl = 'https://pokeapi.co/api/v2';
-  
-  Future<Map<String, dynamic>> getPokemonList({
-    required int offset,
-    required int limit,
+
+  /// Retorna lista paginada de pokémon
+  Future<Map<String, dynamic>> obterListaPokemon({
+    required int deslocamento,
+    required int limite,
   }) async {
     try {
-      final uri = Uri.parse('$baseUrl/pokemon?offset=$offset&limit=$limit');
-      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+      final uri = Uri.parse('$baseUrl/pokemon?offset=$deslocamento&limit=$limite');
+      final resposta = await http.get(uri).timeout(const Duration(seconds: 10));
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final results = (data['results'] as List)
+      if (resposta.statusCode == 200) {
+        final dados = json.decode(resposta.body);
+        final resultados = (dados['results'] as List)
             .map((json) => PokemonListItem.fromJson(json))
             .toList();
 
         return {
-          'results': results,
-          'count': data['count'],
-          'next': data['next'],
-          'previous': data['previous'],
+          'results': resultados,
+          'count': dados['count'],
+          'next': dados['next'],
+          'previous': dados['previous'],
         };
       } else {
-        throw Exception('Falha ao carregar lista de Pokémon (código ${response.statusCode}).');
+        throw Exception(
+          'Falha ao carregar lista de Pokémon (código ${resposta.statusCode}).',
+        );
       }
     } on SocketException {
-      throw Exception('Erro de conexão: verifique sua internet e tente novamente.');
+      throw Exception(
+        'Erro de conexão: verifique sua internet e tente novamente.',
+      );
     } on TimeoutException {
-      throw Exception('Tempo esgotado: a requisição demorou muito. Tente novamente.');
+      throw Exception(
+        'Tempo esgotado: a requisição demorou muito. Tente novamente.',
+      );
     } catch (e) {
       throw Exception('Erro ao carregar lista: $e');
     }
   }
-  
-  Future<Pokemon> getPokemon(int id) async {
+
+  Future<Pokemon> obterPokemon(int id) async {
     try {
       final uri = Uri.parse('$baseUrl/pokemon/$id');
-      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+      final resposta = await http.get(uri).timeout(const Duration(seconds: 10));
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return Pokemon.fromJson(data);
+      if (resposta.statusCode == 200) {
+        final dados = json.decode(resposta.body);
+        return Pokemon.fromJson(dados);
       } else {
-        throw Exception('Falha ao carregar Pokémon (código ${response.statusCode}).');
+        throw Exception(
+          'Falha ao carregar Pokémon (código ${resposta.statusCode}).',
+        );
       }
     } on SocketException {
-      throw Exception('Erro de conexão: verifique sua internet e tente novamente.');
+      throw Exception(
+        'Erro de conexão: verifique sua internet e tente novamente.',
+      );
     } on TimeoutException {
-      throw Exception('Tempo esgotado: a requisição demorou muito. Tente novamente.');
+      throw Exception(
+        'Tempo esgotado: a requisição demorou muito. Tente novamente.',
+      );
     } catch (e) {
       throw Exception('Erro ao carregar Pokémon: $e');
     }
   }
-  
-  Future<PokemonDetails> getPokemonDetails(int id) async {
-    try {
-      // Get basic pokemon data
-      final pokemonUri = Uri.parse('$baseUrl/pokemon/$id');
-      final pokemonResponse = await http.get(pokemonUri).timeout(const Duration(seconds: 10));
 
-      if (pokemonResponse.statusCode != 200) {
-        throw Exception('Falha ao carregar Pokémon (código ${pokemonResponse.statusCode}).');
+  Future<PokemonDetails> obterDetalhesPokemon(int id) async {
+    try {
+      // Busca dados básicos do pokémon
+      final uriPokemon = Uri.parse('$baseUrl/pokemon/$id');
+      final respostaPokemon = await http
+          .get(uriPokemon)
+          .timeout(const Duration(seconds: 10));
+
+      if (respostaPokemon.statusCode != 200) {
+        throw Exception(
+          'Falha ao carregar Pokémon (código ${respostaPokemon.statusCode}).',
+        );
       }
 
-      final pokemonData = json.decode(pokemonResponse.body);
+      final dadosPokemon = json.decode(respostaPokemon.body);
 
-      // Get species data for description
-      final speciesUri = Uri.parse('$baseUrl/pokemon-species/$id');
-      final speciesResponse = await http.get(speciesUri).timeout(const Duration(seconds: 10));
+      // Busca dados da espécie para pegar descrição
+      final uriEspecie = Uri.parse('$baseUrl/pokemon-species/$id');
+      final respostaEspecie = await http
+          .get(uriEspecie)
+          .timeout(const Duration(seconds: 10));
 
-      String description = 'Nenhuma descrição disponível.';
-      List<PokemonEvolution> evolutionChain = [];
+      String descricao = 'Nenhuma descrição disponível.';
+      List<PokemonEvolution> cadeiaEvolucao = [];
 
-      if (speciesResponse.statusCode == 200) {
-        final speciesData = json.decode(speciesResponse.body);
+      if (respostaEspecie.statusCode == 200) {
+        final dadosEspecie = json.decode(respostaEspecie.body);
 
-        // Get description (prefer Portuguese-BR, then Portuguese, then English)
-        final flavorTextEntries = speciesData['flavor_text_entries'] as List;
-        Map<String, dynamic>? chosenEntry;
-        
-        // Try Portuguese variants first
-        for (var langCode in ['pt-BR', 'pt', 'en']) {
+        // Busca descrição (prioridade: pt-BR, pt, depois en)
+        final entradasTexto = dadosEspecie['flavor_text_entries'] as List;
+        Map<String, dynamic>? entradaEscolhida;
+
+        // Tenta português primeiro
+        for (var codigoIdioma in ['pt-BR', 'pt', 'en']) {
           try {
-            chosenEntry = flavorTextEntries.firstWhere(
-              (entry) => entry['language']['name'] == langCode,
+            entradaEscolhida = entradasTexto.firstWhere(
+              (entrada) => entrada['language']['name'] == codigoIdioma,
             );
-            break; // Found one, stop searching
+            break; // Encontrou, para de buscar
           } catch (_) {
-            continue; // Try next language
+            continue; // Tenta próximo idioma
           }
         }
-        
-        // Fallback to any available description
-        if (chosenEntry == null && flavorTextEntries.isNotEmpty) {
-          chosenEntry = flavorTextEntries[0];
+
+        // Fallback para qualquer descrição disponível
+        if (entradaEscolhida == null && entradasTexto.isNotEmpty) {
+          entradaEscolhida = entradasTexto[0];
         }
 
-        if (chosenEntry != null) {
-          description = (chosenEntry['flavor_text'] as String)
+        if (entradaEscolhida != null) {
+          descricao = (entradaEscolhida['flavor_text'] as String)
               .replaceAll('\n', ' ')
               .replaceAll('\f', ' ')
               .trim();
         }
 
-        // Get evolution chain
-        final evolutionChainUrl = speciesData['evolution_chain']?['url'];
-        if (evolutionChainUrl != null) {
+        // Busca cadeia de evolução
+        final urlCadeiaEvolucao = dadosEspecie['evolution_chain']?['url'];
+        if (urlCadeiaEvolucao != null) {
           try {
-            final evolutionResponse = await http
-                .get(Uri.parse(evolutionChainUrl))
+            final respostaEvolucao = await http
+                .get(Uri.parse(urlCadeiaEvolucao))
                 .timeout(const Duration(seconds: 10));
-            if (evolutionResponse.statusCode == 200) {
-              final evolutionData = json.decode(evolutionResponse.body);
-              evolutionChain = _parseEvolutionChain(evolutionData['chain']);
+            if (respostaEvolucao.statusCode == 200) {
+              final dadosEvolucao = json.decode(respostaEvolucao.body);
+              cadeiaEvolucao = _processarCadeiaEvolucao(dadosEvolucao['chain']);
             }
-          } catch (_) {
-            // ignore evolution chain errors (not critical)
-          }
+          } catch (_) {}
         }
       }
 
       return PokemonDetails(
-        id: pokemonData['id'],
-        name: pokemonData['name'],
-        imageUrl: pokemonData['sprites']['other']['official-artwork']['front_default'] ?? 
-                  pokemonData['sprites']['front_default'] ?? '',
-        types: (pokemonData['types'] as List)
-            .map((type) => type['type']['name'] as String)
+        id: dadosPokemon['id'],
+        name: dadosPokemon['name'],
+        imageUrl:
+            dadosPokemon['sprites']['other']['official-artwork']['front_default'] ??
+            dadosPokemon['sprites']['front_default'] ??
+            '',
+        types: (dadosPokemon['types'] as List)
+            .map((tipo) => tipo['type']['name'] as String)
             .toList(),
-        height: pokemonData['height'],
-        weight: pokemonData['weight'],
-        stats: (pokemonData['stats'] as List)
+        height: dadosPokemon['height'],
+        weight: dadosPokemon['weight'],
+        stats: (dadosPokemon['stats'] as List)
             .map((stat) => PokemonStat.fromJson(stat))
             .toList(),
-        abilities: (pokemonData['abilities'] as List)
-            .map((ability) => ability['ability']['name'] as String)
+        abilities: (dadosPokemon['abilities'] as List)
+            .map((habilidade) => habilidade['ability']['name'] as String)
             .toList(),
-        description: description,
-        evolutionChain: evolutionChain,
+        description: descricao,
+        evolutionChain: cadeiaEvolucao,
       );
     } on SocketException {
-      throw Exception('Erro de conexão: verifique sua internet e tente novamente.');
+      throw Exception(
+        'Erro de conexão: verifique sua internet e tente novamente.',
+      );
     } on TimeoutException {
-      throw Exception('Tempo esgotado: a requisição demorou muito. Tente novamente.');
+      throw Exception(
+        'Tempo esgotado: a requisição demorou muito. Tente novamente.',
+      );
     } catch (e) {
       throw Exception('Erro ao carregar detalhes: $e');
     }
   }
-  
-  List<PokemonEvolution> _parseEvolutionChain(Map<String, dynamic> chain) {
-    List<PokemonEvolution> evolutions = [];
-    
-    void addEvolution(Map<String, dynamic> node) {
-      final speciesUrl = node['species']['url'] as String;
-      final id = int.parse(speciesUrl.split('/')[6]);
-      final name = node['species']['name'] as String;
-      
-      evolutions.add(PokemonEvolution(
-        id: id,
-        name: name,
-        imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png',
-      ));
-      
-      if (node['evolves_to'] != null && (node['evolves_to'] as List).isNotEmpty) {
-        for (var evolution in node['evolves_to']) {
-          addEvolution(evolution);
+
+  List<PokemonEvolution> _processarCadeiaEvolucao(Map<String, dynamic> cadeia) {
+    List<PokemonEvolution> evolucoes = [];
+
+    void adicionarEvolucao(Map<String, dynamic> no) {
+      final urlEspecie = no['species']['url'] as String;
+      final id = int.parse(urlEspecie.split('/')[6]);
+      final nome = no['species']['name'] as String;
+
+      evolucoes.add(
+        PokemonEvolution(
+          id: id,
+          name: nome,
+          imageUrl:
+              'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png',
+        ),
+      );
+
+      if (no['evolves_to'] != null &&
+          (no['evolves_to'] as List).isNotEmpty) {
+        for (var evolucao in no['evolves_to']) {
+          adicionarEvolucao(evolucao);
         }
       }
     }
-    
-    addEvolution(chain);
-    return evolutions;
-  }
-  
-  Future<List<PokemonListItem>> searchPokemon(String query) async {
-    try {
-      // PokeAPI doesn't have a direct search endpoint
-      // We'll fetch a larger list and filter locally
-      final uri = Uri.parse('$baseUrl/pokemon?limit=1000');
-      final response = await http.get(uri).timeout(const Duration(seconds: 12));
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final results = (data['results'] as List)
+    adicionarEvolucao(cadeia);
+    return evolucoes;
+  }
+
+  Future<List<PokemonListItem>> pesquisarPokemon(String consulta) async {
+    try {
+      // PokéAPI não tem endpoint de busca direto
+      // Busca lista maior e filtra localmente
+      final uri = Uri.parse('$baseUrl/pokemon?limit=1000');
+      final resposta = await http.get(uri).timeout(const Duration(seconds: 12));
+
+      if (resposta.statusCode == 200) {
+        final dados = json.decode(resposta.body);
+        final resultados = (dados['results'] as List)
             .map((json) => PokemonListItem.fromJson(json))
-            .where((pokemon) => pokemon.name.contains(query.toLowerCase()))
+            .where((pokemon) => pokemon.name.contains(consulta.toLowerCase()))
             .take(20)
             .toList();
 
-        return results;
+        return resultados;
       } else {
-        throw Exception('Falha ao buscar Pokémon (código ${response.statusCode}).');
+        throw Exception(
+          'Falha ao buscar Pokémon (código ${resposta.statusCode}).',
+        );
       }
     } on SocketException {
-      throw Exception('Erro de conexão: verifique sua internet e tente novamente.');
+      throw Exception(
+        'Erro de conexão: verifique sua internet e tente novamente.',
+      );
     } on TimeoutException {
-      throw Exception('Tempo esgotado: a requisição demorou muito. Tente novamente.');
+      throw Exception(
+        'Tempo esgotado: a requisição demorou muito. Tente novamente.',
+      );
     } catch (e) {
       throw Exception('Erro ao buscar Pokémon: $e');
     }

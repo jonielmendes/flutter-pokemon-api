@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+/// Provider responsável pelo gerenciamento de tema (claro/escuro)
 class ThemeProvider with ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   
@@ -17,6 +18,7 @@ class ThemeProvider with ChangeNotifier {
     _loadTheme();
   }
   
+  /// Carrega preferência de tema salva
   Future<void> _loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     final themeModeString = prefs.getString('themeMode') ?? 'system';
@@ -35,6 +37,7 @@ class ThemeProvider with ChangeNotifier {
     notifyListeners();
   }
   
+  /// Salva preferência de tema
   Future<void> setThemeMode(ThemeMode mode) async {
     _themeMode = mode;
     notifyListeners();
@@ -43,6 +46,7 @@ class ThemeProvider with ChangeNotifier {
     await prefs.setString('themeMode', mode.toString().split('.').last);
   }
   
+  /// Alterna entre tema claro e escuro
   void toggleTheme() {
     if (_themeMode == ThemeMode.light) {
       setThemeMode(ThemeMode.dark);

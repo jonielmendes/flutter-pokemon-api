@@ -7,6 +7,7 @@ import '../widgets/search_bar_widget.dart';
 import '../widgets/error_widget.dart';
 import 'detail_screen.dart';
 
+/// Tela principal com lista de pokémon e busca
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -22,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     
+    // Carrega pokémon iniciais
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final provider = context.read<PokemonProvider>();
       if (provider.pokemons.isEmpty) {
@@ -29,9 +31,11 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     });
     
+    // Listener para infinite scroll
     _scrollController.addListener(_onScroll);
   }
 
+  /// Detecta quando usuário chega perto do fim da lista
   void _onScroll() {
     if (_scrollController.position.pixels >= 
         _scrollController.position.maxScrollExtent - 200) {
