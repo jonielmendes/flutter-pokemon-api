@@ -14,7 +14,9 @@ class PokemonService {
     required int limite,
   }) async {
     try {
-      final uri = Uri.parse('$baseUrl/pokemon?offset=$deslocamento&limit=$limite');
+      final uri = Uri.parse(
+        '$baseUrl/pokemon?offset=$deslocamento&limit=$limite',
+      );
       final resposta = await http.get(uri).timeout(const Duration(seconds: 10));
 
       if (resposta.statusCode == 200) {
@@ -75,7 +77,7 @@ class PokemonService {
 
   Future<PokemonDetails> obterDetalhesPokemon(int id) async {
     try {
-      // Busca dados básicos do pokémon
+      // REQUISIÇÃO 1
       final uriPokemon = Uri.parse('$baseUrl/pokemon/$id');
       final respostaPokemon = await http
           .get(uriPokemon)
@@ -89,7 +91,7 @@ class PokemonService {
 
       final dadosPokemon = json.decode(respostaPokemon.body);
 
-      // Busca dados da espécie para pegar descrição
+      //  REQUISIÇÃO 2
       final uriEspecie = Uri.parse('$baseUrl/pokemon-species/$id');
       final respostaEspecie = await http
           .get(uriEspecie)
@@ -129,7 +131,7 @@ class PokemonService {
               .trim();
         }
 
-        // Busca cadeia de evolução
+        // REQUISIÇÃO 3
         final urlCadeiaEvolucao = dadosEspecie['evolution_chain']?['url'];
         if (urlCadeiaEvolucao != null) {
           try {
@@ -195,8 +197,7 @@ class PokemonService {
         ),
       );
 
-      if (no['evolves_to'] != null &&
-          (no['evolves_to'] as List).isNotEmpty) {
+      if (no['evolves_to'] != null && (no['evolves_to'] as List).isNotEmpty) {
         for (var evolucao in no['evolves_to']) {
           adicionarEvolucao(evolucao);
         }

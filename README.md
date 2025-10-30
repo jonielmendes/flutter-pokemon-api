@@ -27,6 +27,32 @@ Aplicativo móvel desenvolvido em Flutter que consome a [PokéAPI](https://pokea
 - Cached Network Image - Cache de imagens
 - Shared Preferences - Persistência de dados
 
+## Estrutura do Projeto
+
+```
+lib/
+├── models/
+│   └── pokemon.dart              # Estrutura de dados (PokemonListItem, PokemonDetails, etc)
+├── services/
+│   └── pokemon_service.dart      # Comunicação com a PokéAPI (requisições HTTP)
+├── providers/
+│   ├── pokemon_provider.dart     # Gerenciamento de estado da lista e detalhes
+│   └── theme_provider.dart       # Gerenciamento de tema claro/escuro
+├── screens/
+│   ├── splash_screen.dart        # Tela inicial animada
+│   ├── home_screen.dart          # Lista principal de Pokémon
+│   └── detail_screen.dart        # Detalhes completos do Pokémon
+├── widgets/
+│   ├── pokemon_card.dart         # Card individual na lista
+│   ├── search_bar_widget.dart    # Barra de busca
+│   ├── error_widget.dart         # Widget de erro com retry
+│   ├── stat_bar.dart             # Barra de estatísticas
+│   └── type_badge.dart           # Badge de tipo do Pokémon
+└── utils/
+    ├── pokemon_colors.dart       # Cores por tipo
+    └── string_extensions.dart    # Extensões de String
+```
+
 ## Como Executar
 
 Clone o repositório, instale as dependências e execute:
